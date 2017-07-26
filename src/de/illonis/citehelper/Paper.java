@@ -2,6 +2,8 @@ package de.illonis.citehelper;
 
 import java.util.List;
 
+import org.jbibtex.BibTeXEntry;
+
 public class Paper {
 
 	private String key;
@@ -9,6 +11,16 @@ public class Paper {
 	private int year;
 	private List<String> authors;
 	private String filename;
+	private BibTeXEntry bibtexEntry;
+	private String url;
+
+	public BibTeXEntry getBibtexEntry() {
+		return bibtexEntry;
+	}
+
+	public void setBibtexEntry(BibTeXEntry bibtexEntry) {
+		this.bibtexEntry = bibtexEntry;
+	}
 
 	public String getKey() {
 		return key;
@@ -48,6 +60,14 @@ public class Paper {
 
 	public String getFilename() {
 		return filename;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 }

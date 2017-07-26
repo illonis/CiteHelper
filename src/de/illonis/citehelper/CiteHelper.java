@@ -1,24 +1,39 @@
 package de.illonis.citehelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
+import org.jbibtex.ParseException;
+import org.jbibtex.TokenMgrException;
+
+import com.google.common.eventbus.Subscribe;
+
+import de.illonis.citehelper.bibtex.BibtexImporter;
+import de.illonis.citehelper.events.ImportFileChosenEvent;
 import de.illonis.citehelper.views.CiteTableModel;
+import de.illonis.citehelper.views.ErrorDialog;
 import de.illonis.citehelper.views.MainWindow;
 
 public class CiteHelper {
 
+	private final CiteTableModel tableData;
+	private MainWindow window;
+
 	public static void main(String[] args) {
 
-		CiteTableModel tableData = new CiteTableModel();
+		CiteHelper helper = new CiteHelper();
+		CiteEventBus.getInstance().getBus().register(helper);
+		SwingUtilities.invokeLater(new Runnable() {
 
-		fillDemoData(tableData);
-
-		MainWindow window = new MainWindow(tableData);
-
-		window.setSize(800, 600);
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
+			@Override
+			public void run() {
+				helper.startWindow();
+			}
+		});
 	}
 
 	private static void fillDemoData(CiteTableModel tableData) {
@@ -38,6 +53,37 @@ public class CiteHelper {
 		paper.setAuthors(new LinkedList<>());
 		paper.setFilename("random9131.pdf");
 		tableData.add(paper);
+	}
 
+	public CiteHelper() {
+		tableData = new CiteTableModel();
+		fillDemoData(tableData);
+	}
+
+	@Subscribe
+	public void onImportFileChosen(ImportFileChosenEvent event) {
+		File file = event.getFileImported();
+		BibtexImporter importer = new BibtexImporter();
+		try {
+			List<Paper> newPapers = importer.importFromFile(file);
+			showPreview(newPapers);
+		} catch (TokenMgrException | IOException | ParseException e) {
+			if (null != window) {
+				new ErrorDialog(window, "Could not parse file.", e).setVisible(true);
+			}
+			e.printStackTrace();
+		}
+	}
+
+	private void showPreview(List<Paper> newPapers) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void startWindow() {
+		window = new MainWindow(tableData);
+		window.setSize(800, 600);
+		window.setLocationRelativeTo(null);
+		window.setVisible(true);
 	}
 }

@@ -33,7 +33,7 @@ public class MainWindow extends JFrame {
 		add(tableScroller, BorderLayout.CENTER);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
-	
+
 	private void initTable() {
 		table.setAutoCreateRowSorter(true);
 
