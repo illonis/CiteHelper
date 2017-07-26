@@ -68,16 +68,17 @@ public class CiteHelper {
 			List<Paper> newPapers = importer.importFromFile(file);
 			showPreview(newPapers);
 		} catch (TokenMgrException | IOException | ParseException e) {
+			e.printStackTrace();
 			if (null != window) {
 				new ErrorDialog(window, "Could not parse file.", e).setVisible(true);
 			}
-			e.printStackTrace();
 		}
 	}
 
 	private void showPreview(List<Paper> newPapers) {
-		// TODO Auto-generated method stub
-
+		newPapers.forEach(p -> tableData.add(p));
+		tableData.fireTableDataChanged();
+		// TODO: show prompt with preview
 	}
 
 	private void startWindow() {

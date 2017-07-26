@@ -1,6 +1,7 @@
 package de.illonis.citehelper.views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +25,7 @@ public class ErrorDialog extends JDialog {
 		JLabel label = new JLabel(message);
 		label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		add(label, BorderLayout.NORTH);
-
+		getRootPane().setBackground(Color.RED);
 		setModal(true);
 		setTitle("Error: " + message);
 		StringWriter stringWriter = new StringWriter();
