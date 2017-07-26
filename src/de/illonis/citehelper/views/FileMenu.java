@@ -1,4 +1,4 @@
-package de.illonis.citehelper;
+package de.illonis.citehelper.views;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import de.illonis.citehelper.CiteEventBus;
 import de.illonis.citehelper.events.ImportFileChosenEvent;
 
 public class FileMenu extends JMenuBar {

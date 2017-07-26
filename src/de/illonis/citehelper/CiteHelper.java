@@ -2,6 +2,7 @@ package de.illonis.citehelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,13 +14,16 @@ import org.jbibtex.TokenMgrException;
 import com.google.common.eventbus.Subscribe;
 
 import de.illonis.citehelper.bibtex.BibtexImporter;
+import de.illonis.citehelper.events.ErrorEvent;
+import de.illonis.citehelper.events.FileChangeEvent;
 import de.illonis.citehelper.events.ImportFileChosenEvent;
 import de.illonis.citehelper.views.CiteTableModel;
 import de.illonis.citehelper.views.ErrorDialog;
 import de.illonis.citehelper.views.MainWindow;
 
-public class CiteHelper {
+public class CiteHelper implements MainLogic {
 
+	private Project project;
 	private final CiteTableModel tableData;
 	private MainWindow window;
 
@@ -34,6 +38,14 @@ public class CiteHelper {
 				helper.startWindow();
 			}
 		});
+		FolderWatcher watcher = new FolderWatcher();
+		try {
+			watcher.init();
+			watcher.registerPath(Paths.get("/tmp/citetest"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		watcher.start();
 	}
 
 	private static void fillDemoData(CiteTableModel tableData) {
@@ -56,8 +68,16 @@ public class CiteHelper {
 	}
 
 	public CiteHelper() {
+		project = new Project("Empty project");
 		tableData = new CiteTableModel();
 		fillDemoData(tableData);
+	}
+
+	@Subscribe
+	public void onError(ErrorEvent e) {
+		if (null != window) {
+			new ErrorDialog(window, e.getMessage(), e.getException()).setVisible(true);
+		}
 	}
 
 	@Subscribe
@@ -69,10 +89,14 @@ public class CiteHelper {
 			showPreview(newPapers);
 		} catch (TokenMgrException | IOException | ParseException e) {
 			e.printStackTrace();
-			if (null != window) {
-				new ErrorDialog(window, "Could not parse file.", e).setVisible(true);
-			}
+			CiteEventBus.getInstance().getBus()
+					.post(new ErrorEvent("Could not parse file: " + file.getAbsolutePath(), e));
 		}
+	}
+
+	@Subscribe
+	public void onFileChanged(FileChangeEvent event) {
+		System.out.println(event.getChangeType().name() + " > " + event.getFile());
 	}
 
 	private void showPreview(List<Paper> newPapers) {
@@ -82,9 +106,14 @@ public class CiteHelper {
 	}
 
 	private void startWindow() {
-		window = new MainWindow(tableData);
+		window = new MainWindow(tableData, this);
 		window.setSize(800, 600);
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+	}
+
+	@Override
+	public Project getCurrentProject() {
+		return project;
 	}
 }

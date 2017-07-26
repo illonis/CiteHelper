@@ -1,17 +1,23 @@
 package de.illonis.citehelper.views;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import de.illonis.citehelper.FileMenu;
+import de.illonis.citehelper.CiteEventBus;
+import de.illonis.citehelper.MainLogic;
 import de.illonis.citehelper.Paper;
+import de.illonis.citehelper.events.ErrorEvent;
 
 public class MainWindow extends JFrame {
 
@@ -19,10 +25,11 @@ public class MainWindow extends JFrame {
 
 	private final JTable table;
 	private final CiteTableModel tableModel;
+	private final MainLogic logic;
 
-	public MainWindow(CiteTableModel tableData) {
+	public MainWindow(CiteTableModel tableData, MainLogic logic) {
 		super("CiteHelper");
-
+		this.logic = logic;
 		setJMenuBar(new FileMenu());
 
 		tableModel = tableData;
@@ -53,9 +60,24 @@ public class MainWindow extends JFrame {
 	}
 
 	protected void openFileFor(Paper paper) {
-		// TODO implement
-		JOptionPane.showMessageDialog(MainWindow.this, "Opened at " + paper.getTitle());
-
+		String filename = paper.getFilename();
+		if (null != filename) {
+			Path filePath = logic.getCurrentProject().getWorkingDirectory().resolve(filename);
+			if (Files.isRegularFile(filePath)) {
+				try {
+					Desktop.getDesktop().open(filePath.toFile());
+				} catch (IOException e) {
+					CiteEventBus.getInstance().getBus()
+							.post(new ErrorEvent("Could not open associated file for paper " + paper.getTitle(), e));
+					e.printStackTrace();
+				}
+			} else {
+				JOptionPane.showMessageDialog(this,
+						"Could not find associated file: " + filePath.toAbsolutePath().normalize());
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "No file attached.");
+		}
 	}
 
 }
