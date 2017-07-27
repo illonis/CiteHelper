@@ -1,5 +1,10 @@
 package de.illonis.citehelper;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -337,4 +342,39 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		}
 
 	}
+
+	@Override
+	public void importFromClipboard() {
+		String content = getClipboardContents();
+		if (null != content) {
+			BibtexImporter importer = new BibtexImporter();
+			try {
+				List<Paper> papers = importer.importFromString(content);
+				if (papers.isEmpty()) {
+					JOptionPane.showMessageDialog(window, Messages.getString("messages.error.noclipdata")); //$NON-NLS-1$
+				} else {
+					importData(papers);
+				}
+			} catch (TokenMgrException | ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private String getClipboardContents() {
+		String result = null;
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		// odd: the Object param of getContents is not currently used
+		Transferable contents = clipboard.getContents(null);
+		boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		if (hasTransferableText) {
+			try {
+				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			} catch (UnsupportedFlavorException | IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return result;
+	}
+
 }

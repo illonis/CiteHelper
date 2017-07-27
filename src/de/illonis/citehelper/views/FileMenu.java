@@ -31,12 +31,24 @@ public class FileMenu extends JMenuBar {
 		importChooser.setFileFilter(filter);
 		JMenu file = createFileMenu();
 		add(file);
-		JMenu project = createProjectMenu();
+		JMenu project = createDataMenu();
 		add(project);
 	}
 
-	private JMenu createProjectMenu() {
-		JMenu project = new JMenu(Messages.getString("menu.data")); //$NON-NLS-1$
+	private JMenu createDataMenu() {
+		JMenu dataMenu = new JMenu(Messages.getString("menu.data")); //$NON-NLS-1$
+
+		JMenuItem importClipboard = new JMenuItem(Messages.getString("menu.importclipboard")); //$NON-NLS-1$
+		importClipboard.setActionCommand("importclipboard"); //$NON-NLS-1$
+		importClipboard.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CiteHelper.getInstance().importFromClipboard();
+			}
+		});
+		dataMenu.add(importClipboard);
+
 		JMenuItem importItem = new JMenuItem(Messages.getString("menu.import")); //$NON-NLS-1$
 		importItem.setActionCommand("import"); //$NON-NLS-1$
 		importItem.addActionListener(new ActionListener() {
@@ -52,10 +64,10 @@ public class FileMenu extends JMenuBar {
 
 			}
 		});
-		project.add(importItem);
+		dataMenu.add(importItem);
 		JMenuItem exportSelection = new JMenuItem(Messages.getString("menu.exportselection")); //$NON-NLS-1$
 		exportSelection.setEnabled(false);
-		project.add(exportSelection);
+		dataMenu.add(exportSelection);
 
 		JMenuItem export = new JMenuItem(Messages.getString("menu.export")); //$NON-NLS-1$
 		export.addActionListener(new ActionListener() {
@@ -65,8 +77,8 @@ public class FileMenu extends JMenuBar {
 				CiteHelper.getInstance().exportLibrary();
 			}
 		});
-		project.add(export);
-		return project;
+		dataMenu.add(export);
+		return dataMenu;
 	}
 
 	private JMenu createFileMenu() {
