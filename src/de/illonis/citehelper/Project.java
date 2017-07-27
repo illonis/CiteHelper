@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Project {
@@ -67,5 +68,13 @@ public class Project {
 		}
 
 		return p;
+	}
+
+	public static void save(Project project) throws IOException {
+		List<String> lines = new LinkedList<>();
+		lines.add(KEY_PROJECT_NAME + "=" + project.getName());
+		lines.add(KEY_BIBFILE + "=" + project.getExportBibfile().toString());
+		Path confFile = project.getWorkingDirectory().resolve(Project.PROJECT_FILE_NAME);
+		Files.write(confFile, lines);
 	}
 }

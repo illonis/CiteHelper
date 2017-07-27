@@ -29,4 +29,8 @@ public class CitePreferences {
 		return recentProjectPath;
 	}
 
+	public void setRecentProjectPath(Path recentProjectPath) {
+		this.recentProjectPath = recentProjectPath;
+	}
+
 }

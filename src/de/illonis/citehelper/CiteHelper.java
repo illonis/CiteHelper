@@ -22,6 +22,7 @@ import de.illonis.citehelper.events.ImportFileChosenEvent;
 import de.illonis.citehelper.views.CiteTableModel;
 import de.illonis.citehelper.views.ErrorDialog;
 import de.illonis.citehelper.views.MainWindow;
+import de.illonis.citehelper.views.NewProjectDialog;
 
 public class CiteHelper implements MainLogic {
 
@@ -145,11 +146,30 @@ public class CiteHelper implements MainLogic {
 
 	private void showProjectSetupScreen() {
 		// TODO Auto-generated method stub
+		showNewProjectScreen();
 
 	}
 
+	@Override
+	public Project createProject(String name, Path workingDir) {
+		Project p = new Project(name);
+		p.setWorkingDirectory(workingDir);
+		try {
+			Project.save(p);
+		} catch (IOException e) {
+			e.printStackTrace();
+			CiteEventBus.getInstance().getBus()
+					.post(new ErrorEvent("Could not create project at " + project.getWorkingDirectory(), e));
+		}
+		return p;
+	}
+
 	private void showNewProjectScreen() {
-		// TODO
+		NewProjectDialog dialog = new NewProjectDialog(window);
+		dialog.setLocationRelativeTo(window);
+		dialog.setResizable(false);
+		dialog.setModal(true);
+		dialog.setVisible(true);
 	}
 
 	private void startFileWatcher() {
@@ -166,5 +186,14 @@ public class CiteHelper implements MainLogic {
 	@Override
 	public Project getCurrentProject() {
 		return project;
+	}
+
+	@Override
+	public void setCurrentProject(Project project) {
+		this.project = project;
+		// TODO: update things
+		CitePreferences prefs = new CitePreferences();
+		prefs.setRecentProjectPath(project.getWorkingDirectory());
+		prefs.savePreferences();
 	}
 }
