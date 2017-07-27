@@ -15,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import de.illonis.citehelper.CiteEventBus;
+import de.illonis.citehelper.GoogleScholar;
 import de.illonis.citehelper.MainLogic;
 import de.illonis.citehelper.Paper;
 import de.illonis.citehelper.events.ErrorEvent;
@@ -72,8 +73,17 @@ public class MainWindow extends JFrame {
 					e.printStackTrace();
 				}
 			} else {
-				JOptionPane.showMessageDialog(this,
-						"Could not find associated file: " + filePath.toAbsolutePath().normalize());
+				int result = JOptionPane.showConfirmDialog(this, "No file attached, search on Google Scholar instead?",
+						paper.getTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (JOptionPane.OK_OPTION == result) {
+					try {
+						Desktop.getDesktop().browse(GoogleScholar.getSearchUri(paper));
+					} catch (IOException e) {
+						CiteEventBus.getInstance().getBus()
+								.post(new ErrorEvent("Could not open url: " + paper.getUrl(), e));
+						e.printStackTrace();
+					}
+				}
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "No Key provided.");

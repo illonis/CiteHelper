@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.illonis.citehelper.CiteEventBus;
+import de.illonis.citehelper.CiteHelper;
 import de.illonis.citehelper.events.ImportFileChosenEvent;
 
 public class FileMenu extends JMenuBar {
@@ -51,6 +52,13 @@ public class FileMenu extends JMenuBar {
 		file.addSeparator();
 		JMenuItem exit = new JMenuItem("Exit");
 		file.add(exit);
+		exit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CiteHelper.getInstance().exit();
+			}
+		});
 		return file;
 	}
 }

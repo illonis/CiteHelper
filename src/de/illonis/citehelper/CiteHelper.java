@@ -273,4 +273,9 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		}
 
 	}
+
+	@Override
+	public void exit() {
+		window.dispose();
+	}
 }

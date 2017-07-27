@@ -10,4 +10,6 @@ public interface MainLogic {
 
 	Project createProject(String name, Path workingDir);
 
+	void exit();
+
 }
