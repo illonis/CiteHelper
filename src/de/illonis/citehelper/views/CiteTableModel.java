@@ -29,6 +29,7 @@ public class CiteTableModel extends AbstractTableModel {
 
 	public void add(Paper paper) {
 		paperList.add(paper);
+		fireTableRowsInserted(paperList.size() - 1, paperList.size() - 1);
 	}
 
 	public Paper getPaper(int row) {
@@ -57,6 +58,11 @@ public class CiteTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return columnNames[column];
+	}
+
+	public void clear() {
+		paperList.clear();
+		fireTableDataChanged();
 	}
 
 }

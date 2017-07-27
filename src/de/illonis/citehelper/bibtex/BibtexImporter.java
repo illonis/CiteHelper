@@ -1,10 +1,10 @@
 package de.illonis.citehelper.bibtex;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -22,8 +22,8 @@ import de.illonis.citehelper.Paper;
 
 public class BibtexImporter {
 
-	public List<Paper> importFromFile(File file) throws IOException, TokenMgrException, ParseException {
-		String text = Files.readAllLines(file.toPath()).stream().collect(Collectors.joining("\n"));
+	public List<Paper> importFromFile(Path file) throws IOException, TokenMgrException, ParseException {
+		String text = Files.readAllLines(file).stream().collect(Collectors.joining("\n"));
 		return importFromString(text);
 	}
 

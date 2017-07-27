@@ -9,8 +9,12 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import de.illonis.citehelper.CiteHelper;
+import de.illonis.citehelper.Project;
 
 public class NewProjectDialog extends JDialog implements ActionListener {
 
@@ -41,8 +45,14 @@ public class NewProjectDialog extends JDialog implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO: create Project
-		dispose();
+		if (null != workingDirInput.getCurrentFile()) {
+			Project p = CiteHelper.getInstance().createProject(nameInput.getText().trim(),
+					workingDirInput.getCurrentFile());
+			CiteHelper.getInstance().setCurrentProject(p);
+			dispose();
+		} else {
+			JOptionPane.showMessageDialog(this, "Working dir must not be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,12 +18,20 @@ import de.illonis.citehelper.bibtex.BibtexImporter;
 import de.illonis.citehelper.events.ErrorEvent;
 import de.illonis.citehelper.events.FileChangeEvent;
 import de.illonis.citehelper.events.ImportFileChosenEvent;
+import de.illonis.citehelper.tasks.FolderReader;
+import de.illonis.citehelper.tasks.ResultHandler;
 import de.illonis.citehelper.views.CiteTableModel;
 import de.illonis.citehelper.views.ErrorDialog;
 import de.illonis.citehelper.views.MainWindow;
 import de.illonis.citehelper.views.NewProjectDialog;
 
-public class CiteHelper implements MainLogic {
+public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
+
+	private static MainLogic instance;
+
+	public static MainLogic getInstance() {
+		return instance;
+	}
 
 	private Project project;
 	private final CiteTableModel tableData;
@@ -41,6 +48,7 @@ public class CiteHelper implements MainLogic {
 			recentProject = tryReadProjectFromPath(recentProjectPath);
 		}
 		CiteHelper helper = new CiteHelper(recentProject);
+		instance = helper;
 		CiteEventBus.getInstance().getBus().register(helper);
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -49,6 +57,7 @@ public class CiteHelper implements MainLogic {
 				helper.startWindow();
 			}
 		});
+		helper.loadDataFromCurrentProject();
 	}
 
 	private static Project tryReadProjectFromPath(Path directory) {
@@ -100,7 +109,7 @@ public class CiteHelper implements MainLogic {
 		File file = event.getFileImported();
 		BibtexImporter importer = new BibtexImporter();
 		try {
-			List<Paper> newPapers = importer.importFromFile(file);
+			List<Paper> newPapers = importer.importFromFile(file.toPath());
 			showPreview(newPapers);
 		} catch (TokenMgrException | IOException | ParseException e) {
 			e.printStackTrace();
@@ -134,13 +143,17 @@ public class CiteHelper implements MainLogic {
 			// ask for initial project
 			showProjectSetupScreen();
 		} else {
-			try {
-				watcher.registerPath(project.getWorkingDirectory());
-			} catch (IOException e) {
-				e.printStackTrace();
-				CiteEventBus.getInstance().getBus()
-						.post(new ErrorEvent("Could not start watching " + project.getWorkingDirectory() + ".", e));
-			}
+			startWatching();
+		}
+	}
+
+	private void startWatching() {
+		try {
+			watcher.registerPath(project.getWorkingDirectory());
+		} catch (IOException e) {
+			e.printStackTrace();
+			CiteEventBus.getInstance().getBus()
+					.post(new ErrorEvent("Could not start watching " + project.getWorkingDirectory() + ".", e));
 		}
 	}
 
@@ -176,7 +189,6 @@ public class CiteHelper implements MainLogic {
 		watcher = new FolderWatcher();
 		try {
 			watcher.init();
-			watcher.registerPath(Paths.get("/tmp/citetest"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -191,9 +203,25 @@ public class CiteHelper implements MainLogic {
 	@Override
 	public void setCurrentProject(Project project) {
 		this.project = project;
-		// TODO: update things
+		startWatching();
+		loadDataFromCurrentProject();
 		CitePreferences prefs = new CitePreferences();
 		prefs.setRecentProjectPath(project.getWorkingDirectory());
 		prefs.savePreferences();
+	}
+
+	private void loadDataFromCurrentProject() {
+		tableData.clear();
+		if (null != project) {
+			new FolderReader(this, project.getWorkingDirectory()).execute();
+		}
+	}
+
+	@Override
+	public void handleAsyncResult(List<Paper> result) {
+		for (Paper paper : result) {
+			tableData.add(paper);
+		}
+
 	}
 }
