@@ -43,7 +43,8 @@ public class FileMenu extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int returnVal = importChooser.showOpenDialog(getParent());
+				importChooser.setDialogTitle(Messages.getString("title.import")); //$NON-NLS-1$
+				int returnVal = importChooser.showDialog(getParent(), Messages.getString("action.import")); //$NON-NLS-1$
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = importChooser.getSelectedFile();
 					CiteEventBus.getInstance().getBus().post(new ImportFileChosenEvent(file));
@@ -52,7 +53,9 @@ public class FileMenu extends JMenuBar {
 			}
 		});
 		project.add(importItem);
-
+		JMenuItem exportSelection = new JMenuItem(Messages.getString("menu.exportselection")); //$NON-NLS-1$
+		project.add(exportSelection);
+		
 		JMenuItem export = new JMenuItem(Messages.getString("menu.export")); //$NON-NLS-1$
 		project.add(export);
 		return project;
