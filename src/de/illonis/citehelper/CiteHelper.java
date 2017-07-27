@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -120,6 +121,52 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 
 	@Subscribe
 	public void onFileChanged(FileChangeEvent event) {
+		// called on FolderWatcher thread!
+		final Path file = event.getFile();
+		if (StandardWatchEventKinds.ENTRY_CREATE == event.getChangeType()) {
+			BibtexImporter importer = new BibtexImporter();
+			try {
+				List<Paper> papers = importer.importFromFile(file);
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						tableData.addAll(papers);
+					}
+				});
+			} catch (TokenMgrException | IOException | ParseException e) {
+				// TODO log error
+				e.printStackTrace();
+			}
+		} else if (StandardWatchEventKinds.ENTRY_MODIFY == event.getChangeType()) {
+			BibtexImporter importer = new BibtexImporter();
+			try {
+				List<Paper> newPapers = importer.importFromFile(file);
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						List<Paper> papers = tableData.findPapersFromSource(file);
+						tableData.remove(papers);
+						tableData.addAll(newPapers);
+					}
+				});
+			} catch (TokenMgrException | IOException | ParseException e) {
+				// TODO log error
+				e.printStackTrace();
+			}
+
+		} else if (StandardWatchEventKinds.ENTRY_DELETE == event.getChangeType()) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					List<Paper> papers = tableData.findPapersFromSource(file);
+					tableData.remove(papers);
+				}
+			});
+
+		}
 		System.out.println(event.getChangeType().name() + " > " + event.getFile());
 	}
 

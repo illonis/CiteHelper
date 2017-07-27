@@ -24,7 +24,9 @@ public class BibtexImporter {
 
 	public List<Paper> importFromFile(Path file) throws IOException, TokenMgrException, ParseException {
 		String text = Files.readAllLines(file).stream().collect(Collectors.joining("\n"));
-		return importFromString(text);
+		List<Paper> papers = importFromString(text);
+		papers.forEach(p -> p.setSource(file));
+		return papers;
 	}
 
 	public List<Paper> importFromString(String text) throws TokenMgrException, ParseException {

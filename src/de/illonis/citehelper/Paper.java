@@ -1,5 +1,6 @@
 package de.illonis.citehelper;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import org.jbibtex.BibTeXEntry;
@@ -13,6 +14,15 @@ public class Paper {
 	private String filename;
 	private BibTeXEntry bibtexEntry;
 	private String url;
+	private Path source;
+
+	public Path getSource() {
+		return source;
+	}
+
+	public void setSource(Path source) {
+		this.source = source;
+	}
 
 	public BibTeXEntry getBibtexEntry() {
 		return bibtexEntry;

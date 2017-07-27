@@ -1,7 +1,9 @@
 package de.illonis.citehelper.views;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -65,4 +67,18 @@ public class CiteTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
+	public void addAll(List<Paper> papers) {
+		int oldSize = paperList.size();
+		paperList.addAll(papers);
+		fireTableRowsInserted(oldSize, paperList.size() - 1);
+	}
+
+	public List<Paper> findPapersFromSource(Path source) {
+		return paperList.stream().filter(p -> p.getSource().equals(source)).collect(Collectors.toList());
+	}
+
+	public void remove(List<Paper> papers) {
+		paperList.removeAll(papers);
+		fireTableDataChanged();
+	}
 }
