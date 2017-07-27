@@ -28,6 +28,7 @@ import de.illonis.citehelper.views.CiteTableModel;
 import de.illonis.citehelper.views.ErrorDialog;
 import de.illonis.citehelper.views.MainWindow;
 import de.illonis.citehelper.views.NewProjectDialog;
+import de.illonis.citehelper.views.ProjectFileView;
 
 public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 
@@ -65,7 +66,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		});
 	}
 
-	private static Project tryReadProjectFromPath(Path directory) {
+	public static Project tryReadProjectFromPath(Path directory) {
 		Path confFile = directory.resolve(Project.PROJECT_FILE_NAME);
 		if (Files.isRegularFile(confFile)) {
 			try {
@@ -84,6 +85,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		openProjectChooser.setDialogTitle(Messages.getString("title.openproject")); //$NON-NLS-1$
 		openProjectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		openProjectChooser.setAcceptAllFileFilterUsed(false);
+		openProjectChooser.setFileView(new ProjectFileView());
 	}
 
 	@Subscribe
