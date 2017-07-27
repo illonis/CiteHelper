@@ -1,6 +1,8 @@
 # CiteHelper
 Git-compatible literature management.
 
+![Screenshot](https://illonis.de/citehelper_screenshot.png)
+
 ## Quickstart
 *CiteHelper uses separate files for each literature entry and supports optional same-name PDF-files aside.*
 
