@@ -159,7 +159,7 @@ public class SidePanel extends JPanel implements ActionListener {
 	}
 
 	private void showConfirmDelete() {
-
+		JOptionPane.showMessageDialog(this, "Not supported yet. To remove, delete file manually.");
 	}
 
 	private void showAssignPdfDialog() {
