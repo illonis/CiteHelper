@@ -5,7 +5,7 @@ Git-compatible literature management.
 *CiteHelper uses separate files for each literature entry and supports optional same-name PDF-files aside.*
 
 Start by creating a project in CiteHelper and import BibTeX-files using `Data -> Import BibTeX-file` menu option. CiteHelper will automatically create files in current project's working directory for each literature entry.
-You can associate PDF files to an entry via right-click.
+You can associate PDF files to an entry by selecting it and choose `Assign PDF`.
 
 While open, CiteHelper scans for content changes in the working directory, so manual changes are immediately seen in CiteHelper.
 
