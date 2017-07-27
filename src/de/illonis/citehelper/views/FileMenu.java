@@ -54,9 +54,17 @@ public class FileMenu extends JMenuBar {
 		});
 		project.add(importItem);
 		JMenuItem exportSelection = new JMenuItem(Messages.getString("menu.exportselection")); //$NON-NLS-1$
+		exportSelection.setEnabled(false);
 		project.add(exportSelection);
-		
+
 		JMenuItem export = new JMenuItem(Messages.getString("menu.export")); //$NON-NLS-1$
+		export.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CiteHelper.getInstance().exportLibrary();
+			}
+		});
 		project.add(export);
 		return project;
 	}
@@ -99,6 +107,7 @@ public class FileMenu extends JMenuBar {
 		});
 		JMenuItem projectProperties = new JMenuItem(Messages.getString("menu.projectproperties")); //$NON-NLS-1$
 		file.add(projectProperties);
+		projectProperties.setEnabled(false);
 
 		file.addSeparator();
 		JMenuItem exit = new JMenuItem(Messages.getString("gui.menu.exit")); //$NON-NLS-1$

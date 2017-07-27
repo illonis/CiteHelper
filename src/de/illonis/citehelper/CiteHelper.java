@@ -7,11 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.jbibtex.BibTeXEntry;
 import org.jbibtex.ParseException;
 import org.jbibtex.TokenMgrException;
 
@@ -109,10 +111,19 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		}
 	}
 
+	@Override
+	public boolean isLibraryFile(Path file) {
+		return file.equals(project.getWorkingDirectory().resolve(project.getExportBibfile()));
+	}
+
 	@Subscribe
 	public void onFileChanged(FileChangeEvent event) {
 		// called on FolderWatcher thread!
 		final Path file = event.getFile();
+
+		if (isLibraryFile(file)) {
+			return;
+		}
 		if (StandardWatchEventKinds.ENTRY_CREATE == event.getChangeType()) {
 			BibtexImporter importer = new BibtexImporter();
 			try {
@@ -305,5 +316,22 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	@Override
 	public void exit() {
 		window.dispose();
+	}
+
+	@Override
+	public void exportLibrary() {
+		Path libraryFile = project.getWorkingDirectory().resolve(project.getExportBibfile());
+		List<BibTeXEntry> entries = tableData.getAllValues().stream().map(e -> e.getBibtexEntry())
+				.collect(Collectors.toList());
+		try {
+			BibtexExporter.exportToFile(libraryFile, entries);
+			JOptionPane.showMessageDialog(window,
+					MessageFormat.format(Messages.getString("messages.libraryexport"), libraryFile)); //$NON-NLS-1$
+		} catch (TokenMgrException | IOException | ParseException e1) {
+			e1.printStackTrace();
+			CiteEventBus.getInstance().getBus().post(new ErrorEvent(MessageFormat
+					.format(Messages.getString("messages.error.exportlibrary"), project.getWorkingDirectory()), e1)); //$NON-NLS-1$
+		}
+
 	}
 }

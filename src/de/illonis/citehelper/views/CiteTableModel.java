@@ -2,6 +2,7 @@ package de.illonis.citehelper.views;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,10 @@ public class CiteTableModel extends AbstractTableModel {
 
 	public CiteTableModel() {
 		paperList = new ArrayList<>();
+	}
+
+	public List<Paper> getAllValues() {
+		return new LinkedList<>(paperList);
 	}
 
 	@Override

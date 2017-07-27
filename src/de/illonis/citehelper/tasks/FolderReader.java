@@ -13,6 +13,8 @@ import javax.swing.SwingWorker;
 import org.jbibtex.ParseException;
 import org.jbibtex.TokenMgrException;
 
+import de.illonis.citehelper.CiteHelper;
+import de.illonis.citehelper.MainLogic;
 import de.illonis.citehelper.Paper;
 import de.illonis.citehelper.bibtex.BibtexImporter;
 
@@ -26,10 +28,11 @@ public class FolderReader extends SwingWorker<List<Paper>, Integer> {
 		this.handleResult = handler;
 		this.path = path;
 		bibFilter = new Predicate<Path>() {
+			MainLogic logic = CiteHelper.getInstance();
 
 			@Override
 			public boolean test(Path t) {
-				return t.toString().toLowerCase().endsWith(EXT_BIBTEX);
+				return t.toString().toLowerCase().endsWith(EXT_BIBTEX) && !logic.isLibraryFile(t);
 			}
 		};
 	}
