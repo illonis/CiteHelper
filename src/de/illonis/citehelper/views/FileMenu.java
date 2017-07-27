@@ -17,21 +17,24 @@ import de.illonis.citehelper.events.ImportFileChosenEvent;
 
 public class FileMenu extends JMenuBar {
 
+	private static final String EXT_TXT = "txt"; //$NON-NLS-1$
+	private static final String EXT_BIBTEX = "bib"; //$NON-NLS-1$
 	private static final long serialVersionUID = 1L;
 	private final JFileChooser importChooser;
 
 	public FileMenu() {
 		importChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(Messages.getString("label.bibtexfiles"), "bib", //$NON-NLS-1$ //$NON-NLS-2$
-				"txt"); //$NON-NLS-1$
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(Messages.getString("label.bibtexfiles"), //$NON-NLS-1$
+				EXT_BIBTEX, EXT_TXT);
 		importChooser.setFileFilter(filter);
 		JMenu file = createFileMenu();
 		add(file);
+		JMenu project = createProjectMenu();
+		add(project);
 	}
 
-	private JMenu createFileMenu() {
-		JMenu file = new JMenu(Messages.getString("menu.file")); //$NON-NLS-1$
-
+	private JMenu createProjectMenu() {
+		JMenu project = new JMenu(Messages.getString("menu.data")); //$NON-NLS-1$
 		JMenuItem importItem = new JMenuItem(Messages.getString("menu.import")); //$NON-NLS-1$
 		importItem.setActionCommand("import"); //$NON-NLS-1$
 		importItem.addActionListener(new ActionListener() {
@@ -46,10 +49,22 @@ public class FileMenu extends JMenuBar {
 
 			}
 		});
-		file.add(importItem);
+		project.add(importItem);
 
 		JMenuItem export = new JMenuItem(Messages.getString("menu.export")); //$NON-NLS-1$
-		file.add(export);
+		project.add(export);
+		return project;
+	}
+
+	private JMenu createFileMenu() {
+		JMenu file = new JMenu(Messages.getString("menu.file")); //$NON-NLS-1$
+		JMenuItem newProject = new JMenuItem(Messages.getString("menu.newproject")); //$NON-NLS-1$
+		file.add(newProject);
+		file.addSeparator();
+		JMenuItem openWorkDir = new JMenuItem(Messages.getString("menu.openworkdir")); //$NON-NLS-1$
+		file.add(openWorkDir);
+		JMenuItem projectProperties = new JMenuItem(Messages.getString("menu.projectproperties")); //$NON-NLS-1$
+		file.add(projectProperties);
 
 		file.addSeparator();
 		JMenuItem exit = new JMenuItem(Messages.getString("gui.menu.exit")); //$NON-NLS-1$
