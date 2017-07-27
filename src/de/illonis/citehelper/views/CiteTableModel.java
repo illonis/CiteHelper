@@ -53,6 +53,8 @@ public class CiteTableModel extends AbstractTableModel {
 			}
 		case 2:
 			return paper.getYear();
+		case 3:
+			return paper.getKey();
 		}
 		return null;
 	}
@@ -68,6 +70,9 @@ public class CiteTableModel extends AbstractTableModel {
 	}
 
 	public void addAll(List<Paper> papers) {
+		if (papers.size() == 0) {
+			return;
+		}
 		int oldSize = paperList.size();
 		paperList.addAll(papers);
 		fireTableRowsInserted(oldSize, paperList.size() - 1);

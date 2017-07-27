@@ -60,8 +60,8 @@ public class MainWindow extends JFrame {
 	}
 
 	protected void openFileFor(Paper paper) {
-		String filename = paper.getFilename();
-		if (null != filename) {
+		if (null != paper.getKey()) {
+			String filename = paper.getKey() + ".pdf";
 			Path filePath = logic.getCurrentProject().getWorkingDirectory().resolve(filename);
 			if (Files.isRegularFile(filePath)) {
 				try {
@@ -76,7 +76,7 @@ public class MainWindow extends JFrame {
 						"Could not find associated file: " + filePath.toAbsolutePath().normalize());
 			}
 		} else {
-			JOptionPane.showMessageDialog(this, "No file attached.");
+			JOptionPane.showMessageDialog(this, "No Key provided.");
 		}
 	}
 

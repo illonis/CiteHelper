@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -15,6 +14,7 @@ import org.jbibtex.TokenMgrException;
 
 import com.google.common.eventbus.Subscribe;
 
+import de.illonis.citehelper.bibtex.BibtexExporter;
 import de.illonis.citehelper.bibtex.BibtexImporter;
 import de.illonis.citehelper.events.ErrorEvent;
 import de.illonis.citehelper.events.FileChangeEvent;
@@ -73,29 +73,9 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		return null;
 	}
 
-	private static void fillDemoData(CiteTableModel tableData) {
-
-		List<String> authors = new LinkedList<>();
-		authors.add("Yann LeCun");
-		Paper paper = new Paper();
-		paper.setTitle("Random first title");
-		paper.setYear(1997);
-		paper.setAuthors(authors);
-		paper.setFilename("random91.pdf");
-		tableData.add(paper);
-
-		paper = new Paper();
-		paper.setTitle("Random second title");
-		paper.setYear(2006);
-		paper.setAuthors(new LinkedList<>());
-		paper.setFilename("random9131.pdf");
-		tableData.add(paper);
-	}
-
 	public CiteHelper(Project project) {
 		this.project = project;
 		tableData = new CiteTableModel();
-		fillDemoData(tableData);
 	}
 
 	@Subscribe
@@ -127,17 +107,22 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			BibtexImporter importer = new BibtexImporter();
 			try {
 				List<Paper> papers = importer.importFromFile(file);
-				SwingUtilities.invokeLater(new Runnable() {
+				if (papers.size() > 0) {
+					SwingUtilities.invokeLater(new Runnable() {
 
-					@Override
-					public void run() {
-						tableData.addAll(papers);
-					}
-				});
+						@Override
+						public void run() {
+							synchronized (tableData) {
+								tableData.addAll(papers);
+							}
+						}
+					});
+				}
 			} catch (TokenMgrException | IOException | ParseException e) {
 				// TODO log error
 				e.printStackTrace();
 			}
+
 		} else if (StandardWatchEventKinds.ENTRY_MODIFY == event.getChangeType()) {
 			BibtexImporter importer = new BibtexImporter();
 			try {
@@ -146,9 +131,11 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 
 					@Override
 					public void run() {
-						List<Paper> papers = tableData.findPapersFromSource(file);
-						tableData.remove(papers);
-						tableData.addAll(newPapers);
+						synchronized (tableData) {
+							List<Paper> papers = tableData.findPapersFromSource(file);
+							tableData.remove(papers);
+							tableData.addAll(newPapers);
+						}
 					}
 				});
 			} catch (TokenMgrException | IOException | ParseException e) {
@@ -161,8 +148,10 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 
 				@Override
 				public void run() {
-					List<Paper> papers = tableData.findPapersFromSource(file);
-					tableData.remove(papers);
+					synchronized (tableData) {
+						List<Paper> papers = tableData.findPapersFromSource(file);
+						tableData.remove(papers);
+					}
 				}
 			});
 
@@ -171,9 +160,22 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	}
 
 	private void showPreview(List<Paper> newPapers) {
-		newPapers.forEach(p -> tableData.add(p));
-		tableData.fireTableDataChanged();
 		// TODO: show prompt with preview
+		importData(newPapers);
+	}
+
+	private void importData(List<Paper> newPapers) {
+		newPapers.forEach(p -> {
+			// import as file
+			Path file = project.getWorkingDirectory().resolve(p.getKey() + ".bib");
+			try {
+				BibtexExporter.exportToFile(file, p.getBibtexEntry());
+			} catch (TokenMgrException | IOException | ParseException e) {
+				// TODO log error
+				e.printStackTrace();
+			}
+			p.setSource(file);
+		});
 	}
 
 	private void startWindow() {

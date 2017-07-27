@@ -33,6 +33,9 @@ public class FolderWatcher extends Thread {
 	}
 
 	public void registerPath(Path path) throws IOException {
+		keyPaths.forEach((k, p) -> {
+			k.cancel();
+		});
 		WatchKey key = path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 		keyPaths.put(key, path);
 	}
