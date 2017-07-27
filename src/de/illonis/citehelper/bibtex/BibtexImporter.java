@@ -22,8 +22,11 @@ import de.illonis.citehelper.Paper;
 
 public class BibtexImporter {
 
+	private static final String AUTHOR_DELIMITER = " and "; //$NON-NLS-1$
+	private static final String FILE_SEPARATOR = "\n"; //$NON-NLS-1$
+
 	public List<Paper> importFromFile(Path file) throws IOException, TokenMgrException, ParseException {
-		String text = Files.readAllLines(file).stream().collect(Collectors.joining("\n"));
+		String text = Files.readAllLines(file).stream().collect(Collectors.joining(FILE_SEPARATOR));
 		List<Paper> papers = importFromString(text);
 		papers.forEach(p -> p.setSource(file));
 		return papers;
@@ -69,7 +72,7 @@ public class BibtexImporter {
 		Value authorValue = texEntry.getField(BibTeXEntry.KEY_AUTHOR);
 		if (null != authorValue) {
 			String authorString = authorValue.toUserString();
-			String[] authors = authorString.split(" and ");
+			String[] authors = authorString.split(AUTHOR_DELIMITER);
 			List<String> authorList = new LinkedList<>();
 			for (int i = 0; i < authors.length; i++) {
 				String author = authors[i];

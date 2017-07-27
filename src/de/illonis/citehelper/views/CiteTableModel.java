@@ -7,12 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
 
+import de.illonis.citehelper.Messages;
 import de.illonis.citehelper.Paper;
 
 public class CiteTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final static String[] columnNames = { "Title", "Author", "Year", "Citekey" };
+	private final static String[] columnNames = { Messages.getString("tableheader.title"), Messages.getString("tableheader.author"), Messages.getString("tableheader.year"), Messages.getString("tableheader.citekey") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private final List<Paper> paperList;
 
 	public CiteTableModel() {
@@ -49,7 +50,7 @@ public class CiteTableModel extends AbstractTableModel {
 			if (paper.getAuthors().size() > 0) {
 				return paper.getAuthors().get(0);
 			} else {
-				return "N/A";
+				return Messages.getString("label.na"); //$NON-NLS-1$
 			}
 		case 2:
 			return paper.getYear();

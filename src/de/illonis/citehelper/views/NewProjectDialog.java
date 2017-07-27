@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import de.illonis.citehelper.CiteHelper;
+import de.illonis.citehelper.Messages;
 import de.illonis.citehelper.Project;
 
 public class NewProjectDialog extends JDialog implements ActionListener {
@@ -25,10 +26,10 @@ public class NewProjectDialog extends JDialog implements ActionListener {
 	private final JButton createButton;
 
 	public NewProjectDialog(Frame parent) {
-		super(parent, "New project");
+		super(parent, Messages.getString("title.newproject")); //$NON-NLS-1$
 		nameInput = new JTextField();
 		workingDirInput = new FileInputField();
-		createButton = new JButton("Create");
+		createButton = new JButton(Messages.getString("action.create")); //$NON-NLS-1$
 		createButton.addActionListener(this);
 
 		JPanel contentPane = (JPanel) getContentPane();
@@ -51,7 +52,8 @@ public class NewProjectDialog extends JDialog implements ActionListener {
 			CiteHelper.getInstance().setCurrentProject(p);
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(this, "Working dir must not be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, Messages.getString("messages.error.workingdirempty"), //$NON-NLS-1$
+					Messages.getString("label.error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 		}
 	}
 

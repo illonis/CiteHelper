@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.illonis.citehelper.CiteEventBus;
 import de.illonis.citehelper.CiteHelper;
+import de.illonis.citehelper.Messages;
 import de.illonis.citehelper.events.ImportFileChosenEvent;
 
 public class FileMenu extends JMenuBar {
@@ -21,17 +22,18 @@ public class FileMenu extends JMenuBar {
 
 	public FileMenu() {
 		importChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("BibTeX files", "bib", "txt");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(Messages.getString("label.bibtexfiles"), "bib", //$NON-NLS-1$ //$NON-NLS-2$
+				"txt"); //$NON-NLS-1$
 		importChooser.setFileFilter(filter);
 		JMenu file = createFileMenu();
 		add(file);
 	}
 
 	private JMenu createFileMenu() {
-		JMenu file = new JMenu("File");
+		JMenu file = new JMenu(Messages.getString("menu.file")); //$NON-NLS-1$
 
-		JMenuItem importItem = new JMenuItem("Import");
-		importItem.setActionCommand("import");
+		JMenuItem importItem = new JMenuItem(Messages.getString("menu.import")); //$NON-NLS-1$
+		importItem.setActionCommand("import"); //$NON-NLS-1$
 		importItem.addActionListener(new ActionListener() {
 
 			@Override
@@ -46,11 +48,11 @@ public class FileMenu extends JMenuBar {
 		});
 		file.add(importItem);
 
-		JMenuItem export = new JMenuItem("Export");
+		JMenuItem export = new JMenuItem(Messages.getString("menu.export")); //$NON-NLS-1$
 		file.add(export);
 
 		file.addSeparator();
-		JMenuItem exit = new JMenuItem("Exit");
+		JMenuItem exit = new JMenuItem(Messages.getString("gui.menu.exit")); //$NON-NLS-1$
 		file.add(exit);
 		exit.addActionListener(new ActionListener() {
 

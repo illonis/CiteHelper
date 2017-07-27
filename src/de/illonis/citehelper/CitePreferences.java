@@ -6,7 +6,7 @@ import java.util.prefs.Preferences;
 
 public class CitePreferences {
 
-	private final static String KEY_RECENT_PROJECT = "recent_project";
+	private final static String KEY_RECENT_PROJECT = "recent_project"; //$NON-NLS-1$
 
 	private Path recentProjectPath;
 

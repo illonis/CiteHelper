@@ -10,6 +10,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.illonis.citehelper.Messages;
+
 public class FileInputField extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -23,10 +25,10 @@ public class FileInputField extends JPanel {
 		textField = new JTextField(20);
 		textField.setEditable(false);
 		chooser = new JFileChooser();
-		chooser.setDialogTitle("Select working directory");
+		chooser.setDialogTitle(Messages.getString("title.selectworkingdir")); //$NON-NLS-1$
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
-		chooseButton = new JButton("Choose");
+		chooseButton = new JButton(Messages.getString("action.choosefolder")); //$NON-NLS-1$
 		chooseButton.addActionListener(new ActionListener() {
 
 			@Override

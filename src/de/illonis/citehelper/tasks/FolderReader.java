@@ -17,6 +17,7 @@ import de.illonis.citehelper.Paper;
 import de.illonis.citehelper.bibtex.BibtexImporter;
 
 public class FolderReader extends SwingWorker<List<Paper>, Integer> {
+	private static final String EXT_BIBTEX = ".bib"; //$NON-NLS-1$
 	private final Path path;
 	private final ResultHandler<List<Paper>> handleResult;
 	private final Predicate<? super Path> bibFilter;
@@ -28,7 +29,7 @@ public class FolderReader extends SwingWorker<List<Paper>, Integer> {
 
 			@Override
 			public boolean test(Path t) {
-				return t.toString().toLowerCase().endsWith(".bib");
+				return t.toString().toLowerCase().endsWith(EXT_BIBTEX);
 			}
 		};
 	}
@@ -54,7 +55,6 @@ public class FolderReader extends SwingWorker<List<Paper>, Integer> {
 		try {
 			handleResult.handleAsyncResult(get());
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

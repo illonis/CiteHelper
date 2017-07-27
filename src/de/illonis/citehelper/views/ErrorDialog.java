@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -14,6 +15,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import de.illonis.citehelper.Messages;
 
 public class ErrorDialog extends JDialog {
 
@@ -27,7 +30,7 @@ public class ErrorDialog extends JDialog {
 		add(label, BorderLayout.NORTH);
 		getRootPane().setBackground(Color.RED);
 		setModal(true);
-		setTitle("Error: " + message);
+		setTitle(MessageFormat.format(Messages.getString("title.errordialog"), message)); //$NON-NLS-1$
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter writer = new PrintWriter(stringWriter);
 		error.printStackTrace(writer);
@@ -37,7 +40,7 @@ public class ErrorDialog extends JDialog {
 		field.setEditable(false);
 		JScrollPane scroller = new JScrollPane(field);
 		add(scroller, BorderLayout.CENTER);
-		JButton closeButton = new JButton("Close");
+		JButton closeButton = new JButton(Messages.getString("action.close")); //$NON-NLS-1$
 		closeButton.addActionListener(new ActionListener() {
 
 			@Override

@@ -19,11 +19,13 @@ import de.illonis.citehelper.events.FileChangeEvent;
 
 public class FolderWatcher extends Thread {
 
+	private static final String EXT_PDF = ".pdf"; //$NON-NLS-1$
+	private static final String EXT_BIBTEX = ".bib"; //$NON-NLS-1$
 	private WatchService watcher;
 	private final HashMap<WatchKey, Path> keyPaths;
 
 	public FolderWatcher() {
-		super("FolderWatcher");
+		super("FolderWatcher"); //$NON-NLS-1$
 		setDaemon(true);
 		keyPaths = new HashMap<>();
 	}
@@ -70,6 +72,7 @@ public class FolderWatcher extends Thread {
 
 				// The filename is the
 				// context of the event.
+				@SuppressWarnings("unchecked")
 				WatchEvent<Path> ev = (WatchEvent<Path>) event;
 				Path filename = ev.context();
 
@@ -79,11 +82,11 @@ public class FolderWatcher extends Thread {
 				Path basePath = keyPaths.get(key);
 				Path child = basePath.resolve(filename);
 				String actualFileName = child.getFileName().toString();
-				if (actualFileName.endsWith(".bib") || actualFileName.endsWith(".pdf")) {
+				if (actualFileName.endsWith(EXT_BIBTEX) || actualFileName.endsWith(EXT_PDF)) {
 					EventBus bus = CiteEventBus.getInstance().getBus();
 					bus.post(new FileChangeEvent(ev.kind(), basePath, child));
 				} else {
-					System.out.println("irrelevant file change: " + actualFileName);
+					System.out.println("irrelevant file change: " + actualFileName); //$NON-NLS-1$
 					continue;
 				}
 

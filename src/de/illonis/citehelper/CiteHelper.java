@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -28,6 +29,7 @@ import de.illonis.citehelper.views.NewProjectDialog;
 
 public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 
+	private static final String BIBTEX_FILE_SUFFIX = ".bib"; //$NON-NLS-1$
 	private static MainLogic instance;
 
 	public static MainLogic getInstance() {
@@ -94,8 +96,8 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			showPreview(newPapers);
 		} catch (TokenMgrException | IOException | ParseException e) {
 			e.printStackTrace();
-			CiteEventBus.getInstance().getBus()
-					.post(new ErrorEvent("Could not parse file: " + file.getAbsolutePath(), e));
+			CiteEventBus.getInstance().getBus().post(new ErrorEvent(
+					MessageFormat.format(Messages.getString("messages.error.fileparse"), file.getAbsolutePath()), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -156,7 +158,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			});
 
 		}
-		System.out.println(event.getChangeType().name() + " > " + event.getFile());
+		System.out.println(event.getChangeType().name() + " > " + event.getFile()); //$NON-NLS-1$
 	}
 
 	private void showPreview(List<Paper> newPapers) {
@@ -167,7 +169,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	private void importData(List<Paper> newPapers) {
 		newPapers.forEach(p -> {
 			// import as file
-			Path file = project.getWorkingDirectory().resolve(p.getKey() + ".bib");
+			Path file = project.getWorkingDirectory().resolve(p.getKey() + BIBTEX_FILE_SUFFIX);
 			try {
 				BibtexExporter.exportToFile(file, p.getBibtexEntry());
 			} catch (TokenMgrException | IOException | ParseException e) {
@@ -201,8 +203,8 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			watcher.registerPath(project.getWorkingDirectory());
 		} catch (IOException e) {
 			e.printStackTrace();
-			CiteEventBus.getInstance().getBus()
-					.post(new ErrorEvent("Could not start watching " + project.getWorkingDirectory() + ".", e));
+			CiteEventBus.getInstance().getBus().post(new ErrorEvent(MessageFormat
+					.format(Messages.getString("messages.error.watchstart"), project.getWorkingDirectory()), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -220,8 +222,8 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			Project.save(p);
 		} catch (IOException e) {
 			e.printStackTrace();
-			CiteEventBus.getInstance().getBus()
-					.post(new ErrorEvent("Could not create project at " + project.getWorkingDirectory(), e));
+			CiteEventBus.getInstance().getBus().post(new ErrorEvent(MessageFormat
+					.format(Messages.getString("messages.error.createproject"), project.getWorkingDirectory()), e)); //$NON-NLS-1$
 		}
 		return p;
 	}
