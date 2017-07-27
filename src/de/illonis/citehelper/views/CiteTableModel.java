@@ -13,7 +13,9 @@ import de.illonis.citehelper.Paper;
 public class CiteTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final static String[] columnNames = { Messages.getString("tableheader.title"), Messages.getString("tableheader.author"), Messages.getString("tableheader.year"), Messages.getString("tableheader.citekey") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private final static String[] columnNames = { Messages.getString("tableheader.title"), //$NON-NLS-1$
+			Messages.getString("tableheader.author"), Messages.getString("tableheader.year"), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("tableheader.citekey") }; //$NON-NLS-1$
 	private final List<Paper> paperList;
 
 	public CiteTableModel() {

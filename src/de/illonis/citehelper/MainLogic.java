@@ -8,8 +8,12 @@ public interface MainLogic {
 
 	void setCurrentProject(Project project);
 
+	void showNewProjectScreen();
+
 	Project createProject(String name, Path workingDir);
 
 	void exit();
+
+	void showOpenProjectScreen();
 
 }

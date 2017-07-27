@@ -8,6 +8,8 @@ import java.nio.file.StandardWatchEventKinds;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jbibtex.ParseException;
@@ -40,6 +42,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	private final CiteTableModel tableData;
 	private MainWindow window;
 	private FolderWatcher watcher;
+	private final JFileChooser openProjectChooser;
 
 	public static void main(String[] args) {
 
@@ -60,7 +63,6 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 				helper.startWindow();
 			}
 		});
-		helper.loadDataFromCurrentProject();
 	}
 
 	private static Project tryReadProjectFromPath(Path directory) {
@@ -78,6 +80,10 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	public CiteHelper(Project project) {
 		this.project = project;
 		tableData = new CiteTableModel();
+		openProjectChooser = new JFileChooser();
+		openProjectChooser.setDialogTitle(Messages.getString("title.openproject")); //$NON-NLS-1$
+		openProjectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		openProjectChooser.setAcceptAllFileFilterUsed(false);
 	}
 
 	@Subscribe
@@ -194,7 +200,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 			// ask for initial project
 			showProjectSetupScreen();
 		} else {
-			startWatching();
+			setCurrentProject(project);
 		}
 	}
 
@@ -228,12 +234,28 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		return p;
 	}
 
-	private void showNewProjectScreen() {
+	@Override
+	public void showNewProjectScreen() {
 		NewProjectDialog dialog = new NewProjectDialog(window);
 		dialog.setLocationRelativeTo(window);
 		dialog.setResizable(false);
 		dialog.setModal(true);
 		dialog.setVisible(true);
+	}
+
+	@Override
+	public void showOpenProjectScreen() {
+		int result = openProjectChooser.showOpenDialog(window);
+		if (JFileChooser.APPROVE_OPTION == result) {
+			Path file = openProjectChooser.getSelectedFile().toPath();
+			Project openProject = tryReadProjectFromPath(file);
+			if (null != openProject) {
+				setCurrentProject(openProject);
+			} else {
+				JOptionPane.showMessageDialog(window, Messages.getString("messages.error.noprojectfolder"), //$NON-NLS-1$
+						Messages.getString("label.error"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+			}
+		}
 	}
 
 	private void startFileWatcher() {
@@ -259,6 +281,8 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		CitePreferences prefs = new CitePreferences();
 		prefs.setRecentProjectPath(project.getWorkingDirectory());
 		prefs.savePreferences();
+		window.setTitle(
+				MessageFormat.format("{0} - {1}", project.getName(), Messages.getString("appname.windowtitle"))); //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	private void loadDataFromCurrentProject() {

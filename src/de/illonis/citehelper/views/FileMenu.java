@@ -1,8 +1,10 @@
 package de.illonis.citehelper.views;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -60,9 +62,38 @@ public class FileMenu extends JMenuBar {
 		JMenu file = new JMenu(Messages.getString("menu.file")); //$NON-NLS-1$
 		JMenuItem newProject = new JMenuItem(Messages.getString("menu.newproject")); //$NON-NLS-1$
 		file.add(newProject);
+		newProject.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CiteHelper.getInstance().showNewProjectScreen();
+			}
+		});
+		JMenuItem openProject = new JMenuItem(Messages.getString("menu.openproject")); //$NON-NLS-1$
+		file.add(openProject);
+		openProject.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CiteHelper.getInstance().showOpenProjectScreen();
+			}
+		});
 		file.addSeparator();
 		JMenuItem openWorkDir = new JMenuItem(Messages.getString("menu.openworkdir")); //$NON-NLS-1$
 		file.add(openWorkDir);
+		openWorkDir.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Desktop.getDesktop()
+							.open(CiteHelper.getInstance().getCurrentProject().getWorkingDirectory().toFile());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
+			}
+		});
 		JMenuItem projectProperties = new JMenuItem(Messages.getString("menu.projectproperties")); //$NON-NLS-1$
 		file.add(projectProperties);
 
