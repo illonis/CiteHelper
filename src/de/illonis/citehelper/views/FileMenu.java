@@ -16,8 +16,12 @@ import de.illonis.citehelper.events.ImportFileChosenEvent;
 public class FileMenu extends JMenuBar {
 
 	private static final long serialVersionUID = 1L;
+	private final JFileChooser importChooser;
 
 	public FileMenu() {
+		importChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("BibTeX files", "bib", "txt");
+		importChooser.setFileFilter(filter);
 		JMenu file = createFileMenu();
 		add(file);
 	}
@@ -31,12 +35,9 @@ public class FileMenu extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("BibTeX files", "bib", "txt");
-				chooser.setFileFilter(filter);
-				int returnVal = chooser.showOpenDialog(getParent());
+				int returnVal = importChooser.showOpenDialog(getParent());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
+					File file = importChooser.getSelectedFile();
 					CiteEventBus.getInstance().getBus().post(new ImportFileChosenEvent(file));
 				}
 
