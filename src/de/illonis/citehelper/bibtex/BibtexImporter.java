@@ -41,7 +41,7 @@ public class BibtexImporter {
 		return papers;
 	}
 
-	private static String latexToPlaintext(String latexString) throws ParseException {
+	public static String latexToPlaintext(String latexString) throws ParseException {
 		org.jbibtex.LaTeXParser latexParser = new org.jbibtex.LaTeXParser();
 		List<org.jbibtex.LaTeXObject> latexObjects = latexParser.parse(latexString);
 		org.jbibtex.LaTeXPrinter latexPrinter = new org.jbibtex.LaTeXPrinter();
@@ -111,7 +111,7 @@ public class BibtexImporter {
 		return paper;
 	}
 
-	private static boolean hasLatex(String text) {
+	public static boolean hasLatex(String text) {
 		return text.indexOf('\\') > -1 || text.indexOf('{') > -1;
 	}
 }

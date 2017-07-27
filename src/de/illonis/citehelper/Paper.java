@@ -11,7 +11,6 @@ public class Paper {
 	private String title;
 	private int year;
 	private List<String> authors;
-	private String filename;
 	private BibTeXEntry bibtexEntry;
 	private String url;
 	private Path source;
@@ -52,10 +51,6 @@ public class Paper {
 		this.authors = authors;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
 	public String getTitle() {
 		return title;
 	}
@@ -66,10 +61,6 @@ public class Paper {
 
 	public List<String> getAuthors() {
 		return authors;
-	}
-
-	public String getFilename() {
-		return filename;
 	}
 
 	public void setUrl(String url) {

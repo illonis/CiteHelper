@@ -124,6 +124,9 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 		if (isLibraryFile(file)) {
 			return;
 		}
+		if (!file.toString().endsWith(BIBTEX_FILE_SUFFIX)) {
+			return;
+		}
 		if (StandardWatchEventKinds.ENTRY_CREATE == event.getChangeType()) {
 			BibtexImporter importer = new BibtexImporter();
 			try {
@@ -200,7 +203,7 @@ public class CiteHelper implements MainLogic, ResultHandler<List<Paper>> {
 	}
 
 	private void startWindow() {
-		window = new MainWindow(tableData, this);
+		window = new MainWindow(tableData);
 		window.setSize(800, 600);
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
