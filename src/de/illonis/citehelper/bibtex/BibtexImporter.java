@@ -60,7 +60,18 @@ public class BibtexImporter {
 		Value title = texEntry.getField(BibTeXEntry.KEY_TITLE);
 		if (null != title) {
 			String titleString = title.toUserString();
-			paper.setTitle(titleString);
+			if (hasLatex(titleString)) {
+				// LaTeX string that needs to be translated to plain text
+				// string
+				try {
+					paper.setTitle(latexToPlaintext(titleString));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			} else {
+				// Plain text string
+				paper.setTitle(titleString);
+			}
 		}
 
 		Value year = texEntry.getField(BibTeXEntry.KEY_YEAR);
@@ -76,7 +87,7 @@ public class BibtexImporter {
 			List<String> authorList = new LinkedList<>();
 			for (int i = 0; i < authors.length; i++) {
 				String author = authors[i];
-				if (author.indexOf('\\') > -1 || author.indexOf('{') > -1) {
+				if (hasLatex(author)) {
 					// LaTeX string that needs to be translated to plain text
 					// string
 					try {
@@ -98,5 +109,9 @@ public class BibtexImporter {
 			paper.setUrl(urlString);
 		}
 		return paper;
+	}
+
+	private static boolean hasLatex(String text) {
+		return text.indexOf('\\') > -1 || text.indexOf('{') > -1;
 	}
 }
