@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -35,9 +36,11 @@ public class SidePanel extends JPanel implements ActionListener {
 	final static String CARD_EMPTY = "Empty card"; //$NON-NLS-1$
 	final static String CARD_PAPER = "Paper card"; //$NON-NLS-1$
 	private static final String PDF = "pdf"; //$NON-NLS-1$
+	private static final String ACTION_ASSIGN_PDF = "assign_pdf"; //$NON-NLS-1$
+	private static final String ACTION_DELETE_PDF = "delete_pdf"; //$NON-NLS-1$
 	private final JTable tagTable;
 	private final TagModel tagModel;
-	private final JButton pdfButton;
+	private final JButton pdfButton, pdfAssignButton, deletePdfButton;
 	private final JButton deleteButton;
 	private final JFileChooser pdfChooser;
 	private Paper currentPaper;
@@ -45,10 +48,23 @@ public class SidePanel extends JPanel implements ActionListener {
 	public SidePanel() {
 		JPanel paperPanel = new JPanel(new BorderLayout());
 
-		pdfButton = new JButton();
-		paperPanel.add(pdfButton, BorderLayout.NORTH);
-		pdfButton.setActionCommand(ACTION_PDF); // $NON-NLS-1$
+		JPanel buttonPanel = new JPanel();
+		pdfButton = new JButton(Messages.getString("action.openpdf")); //$NON-NLS-1$
+		pdfButton.setActionCommand(ACTION_PDF);
 		pdfButton.addActionListener(this);
+		buttonPanel.add(pdfButton);
+
+		pdfAssignButton = new JButton(Messages.getString("action.assignpdf")); //$NON-NLS-1$
+		pdfAssignButton.setActionCommand(ACTION_ASSIGN_PDF);
+		pdfAssignButton.addActionListener(this);
+		buttonPanel.add(pdfAssignButton);
+
+		deletePdfButton = new JButton(Messages.getString("action.deletepdf")); //$NON-NLS-1$
+		deletePdfButton.setActionCommand(ACTION_DELETE_PDF);
+		deletePdfButton.addActionListener(this);
+		buttonPanel.add(deletePdfButton);
+
+		paperPanel.add(buttonPanel, BorderLayout.NORTH);
 
 		deleteButton = new JButton(Messages.getString("action.delete")); //$NON-NLS-1$
 		deleteButton.setActionCommand(ACTION_DELETE);
@@ -88,11 +104,9 @@ public class SidePanel extends JPanel implements ActionListener {
 			cl.show(this, CARD_EMPTY);
 		} else {
 			cl.show(this, CARD_PAPER);
-			if (hasPdf()) {
-				pdfButton.setText(Messages.getString("action.openpdf")); //$NON-NLS-1$
-			} else {
-				pdfButton.setText(Messages.getString("action.assignpdf")); //$NON-NLS-1$
-			}
+			boolean hasPdf = hasPdf();
+			pdfButton.setEnabled(hasPdf);
+			deletePdfButton.setEnabled(hasPdf);
 			tagModel.setData(currentPaper.getBibtexEntry());
 		}
 	}
@@ -114,18 +128,37 @@ public class SidePanel extends JPanel implements ActionListener {
 		case ACTION_DELETE:
 			showConfirmDelete();
 			break;
+		case ACTION_ASSIGN_PDF:
+			showAssignPdfDialog();
+			break;
+		case ACTION_DELETE_PDF:
+			showConfirmDeletePDF();
+			break;
 		case ACTION_PDF:
-			if (hasPdf()) {
-				MainWindow.openFileFor(this, currentPaper);
-			} else {
-				showAssignPdfDialog();
-			}
+			MainWindow.openFileFor(this, currentPaper);
 			break;
 		}
 	}
 
+	private void showConfirmDeletePDF() {
+		int result = JOptionPane.showConfirmDialog(this, Messages.getString("messages.deletepdf"), //$NON-NLS-1$
+				Messages.getString("title.deletepdf"), JOptionPane.OK_CANCEL_OPTION); //$NON-NLS-1$
+		if (JOptionPane.OK_OPTION == result) {
+			Path target = CiteHelper.getInstance().getCurrentProject().getWorkingDirectory()
+					.resolve(currentPaper.getKey() + EXT_PDF);
+			try {
+				Files.delete(target);
+			} catch (IOException e) {
+				e.printStackTrace();
+				CiteEventBus.getInstance().getBus()
+						.post(new ErrorEvent(Messages.getString("messages.error.pdfdelete"), e)); //$NON-NLS-1$
+			}
+			updateView();
+		}
+
+	}
+
 	private void showConfirmDelete() {
-		// TODO Auto-generated method stub
 
 	}
 
