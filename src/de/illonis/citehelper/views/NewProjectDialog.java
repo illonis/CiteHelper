@@ -5,10 +5,12 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -33,11 +35,16 @@ public class NewProjectDialog extends JDialog implements ActionListener {
 		createButton.addActionListener(this);
 
 		JPanel contentPane = (JPanel) getContentPane();
+		contentPane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
 
 		contentPane.add(Box.createRigidArea(new Dimension(10, 10)));
+		JLabel nameLabel = new JLabel(Messages.getString("label.projectname")); //$NON-NLS-1$
+		contentPane.add(nameLabel);
 		contentPane.add(nameInput);
 		contentPane.add(Box.createRigidArea(new Dimension(10, 10)));
+		JLabel dirLabel = new JLabel(Messages.getString("label.workingdir")); //$NON-NLS-1$
+		contentPane.add(dirLabel);
 		contentPane.add(workingDirInput);
 		contentPane.add(Box.createRigidArea(new Dimension(10, 10)));
 		contentPane.add(createButton);
